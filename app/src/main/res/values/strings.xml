@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">chain reaction</string>
+    <string name="number_of_players">Number of players:</string>
+    <string name="size_of_grid">Size of Grid:</string>
+    <string name="start_offline_game">Start Offline Game</string>
 </resources>
