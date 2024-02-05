@@ -6,12 +6,13 @@ import processing.core.PApplet;
 
 public class Sketch extends PApplet {
 
-    private final int widths;
-    private final int heights;
+    int widths;
+    int heights;
     private Integer cols;
+    private MData[][] matrix;
+    private Golas[][] dBalls;
     private Integer rows;
-    private Float gap2;
-    private Integer gap;
+    Integer gap;
 
     public Sketch(int widths, int heights, Integer rows) {
         this.widths = widths;
@@ -28,35 +29,57 @@ public class Sketch extends PApplet {
     public void setup() {
         cols = (int) (rows * 0.6);
         gap = this.width / cols;
-        gap2 = (float) ((height-(gap*rows))/2);
-        Log.i("ok",widths+","+width+","+heights+","+height);
+        heights = gap*rows;
+        Log.i("ok",gap*cols+","+width+","+heights+","+height);
+        matrix = new MData[cols][rows];
+        dBalls = new Golas[cols][rows];
+        for (int j = 0; j < rows; j++) {
+            for (int i = 0; i < cols; i++) {
+                matrix[i][j] = new MData();
+                dBalls[i][j] = new Golas(i,j);
+            }
+        }
+        frameRate(120);
     }
 
     @Override
     public void draw() {
         lights();
         background(0);
-        translate((float) width /2, (float) height /2);
-        camera((float) width /2, (float) height /2, 1893, (float) width /2, (float) height /2, 0, 0, 1, 0);
+        camera((float) width /2, (float) heights /2, (float) (widths*1.75), (float) width /2, (float) heights /2, 0, 0, 1, 0);
         drawLines();
-        pushMatrix();
-        translate(widths/2,heights/2,-gap/2);
-        fill(255,0,0);
-        noStroke();
-        sphereDetail(8);
-        sphere(gap/3);
-        popMatrix();
+        drawBalls();
+    }
+
+    private void drawBalls() {
+        for (int j = 0; j < rows; j++) {
+            for (int i = 0; i < cols; i++) {
+                dBalls[i][j].show(matrix[i][j].balls,this);
+            }
+        }
     }
 
     private void drawLines() {
         stroke(255);
-        for (int i = 0; i <= cols; i++) {
-            line(i * gap,gap2, i * gap, (gap * rows)+gap2);
-            line(i * gap,gap2,-gap, i * gap, (gap * rows)+gap2,-gap);
-        }
-        for (int i = 0; i <= rows; i++) {
-            line(0,i * gap+gap2, gap*cols, i*gap+gap2);
-            line(0,i * gap+gap2,-gap, gap*cols, i*gap+gap2,-gap);
+        for (int j = 0; j <= rows; j++) {
+            for (int i = 0; i <= cols; i++) {
+                line(i * gap,0, i * gap, (gap * rows));
+                line(i * gap,0,-gap, i * gap, (gap * rows),-gap);
+                line(0,j * gap, gap*cols, j*gap);
+                line(0,j * gap,-gap, gap*cols, j*gap,-gap);
+                line(i*gap,j*gap,0,i*gap,j*gap,-gap);
+            }
         }
     }
+
+    @Override
+    public void mousePressed() {
+        Log.i("hey",frameRate+" ");
+        int i = floor((float)mouseX/gap);
+        int j = floor((float)(mouseY-((height-heights)/2))/gap);
+        if((i>=0 && i< cols)&&(j>=0 && j< rows)){
+            matrix[i][j].balls++;
+        }
+    }
+
 }
