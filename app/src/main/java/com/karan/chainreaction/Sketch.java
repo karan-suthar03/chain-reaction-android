@@ -2,6 +2,8 @@ package com.karan.chainreaction;
 
 import android.util.Log;
 
+import com.karan.chainreaction.Logic.GameLogic;
+
 import processing.core.PApplet;
 
 public class Sketch extends PApplet {
@@ -9,10 +11,11 @@ public class Sketch extends PApplet {
     int widths;
     int heights;
     private Integer cols;
-    private MData[][] matrix;
+    public MData[][] matrix;
+    private GameLogic gameLogic;
     private Golas[][] dBalls;
-    private Integer rows;
-    Integer gap;
+    private final Integer rows;
+    public int gap;
 
     public Sketch(int widths, int heights, Integer rows) {
         this.widths = widths;
@@ -33,9 +36,10 @@ public class Sketch extends PApplet {
         Log.i("ok",gap*cols+","+width+","+heights+","+height);
         matrix = new MData[cols][rows];
         dBalls = new Golas[cols][rows];
+        gameLogic = new GameLogic(rows,cols,this);
         for (int j = 0; j < rows; j++) {
             for (int i = 0; i < cols; i++) {
-                matrix[i][j] = new MData();
+                matrix[i][j] = new MData(0,-1);
                 dBalls[i][j] = new Golas(i,j);
             }
         }
@@ -49,6 +53,7 @@ public class Sketch extends PApplet {
         camera((float) width /2, (float) heights /2, (float) (widths*1.75), (float) width /2, (float) heights /2, 0, 0, 1, 0);
         drawLines();
         drawBalls();
+        GameLogic.draw();
     }
 
     private void drawBalls() {
@@ -74,12 +79,13 @@ public class Sketch extends PApplet {
 
     @Override
     public void mousePressed() {
-        Log.i("hey",frameRate+" ");
-        int i = floor((float)mouseX/gap);
-        int j = floor((float)(mouseY-((height-heights)/2))/gap);
-        if((i>=0 && i< cols)&&(j>=0 && j< rows)){
-            matrix[i][j].balls++;
+        if(!GameLogic.hoy) {
+            int i = floor((float) mouseX / gap);
+            int j = floor((float) (mouseY - ((height - heights) / 2)) / gap);
+            if ((i >= 0 && i < cols) && (j >= 0 && j < rows)) {
+                matrix[i][j].balls++;
+            }
+            gameLogic.evel();
         }
     }
-
 }
